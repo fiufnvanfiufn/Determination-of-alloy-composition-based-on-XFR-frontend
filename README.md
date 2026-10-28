@@ -1,4 +1,4 @@
-# XRF Alloy Determination — Frontend (SPA на React + TypeScript)
+# XRF Alloy Determination — Frontend
 
 Клиентское приложение для каталогизации и анализа эталонных сплавов по данным рентгенофлуоресцентной спектроскопии (XRF).
 
