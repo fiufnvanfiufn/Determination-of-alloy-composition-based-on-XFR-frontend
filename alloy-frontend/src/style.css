@@ -1,0 +1,463 @@
+:root {
+    --bg-main: #F5F5F5;
+    --brand-red: #8B0000;
+    --hover-yellow: #FFD700;
+    --text-dark: #333333;
+    --card-gray: #E0E0E0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #2b2b2b;
+    color: var(--text-dark);
+}
+
+/* Мобильный фрейм */
+.mobile-body {
+    margin: 0 auto;
+    padding: 0;
+    padding-bottom: 60px;
+    font-family: Arial, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-dark);
+    max-width: 420px;
+    min-height: 100vh;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.feed-body {
+    height: 100vh;
+    overflow: hidden;
+    background-color: #ffffff;
+}
+
+/* --- Нижняя навигация (Tab Bar) --- */
+.tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 420px;
+    height: 60px;
+    background-color: var(--brand-red);
+    display: flex;
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+.tab-bar button,
+.tab-bar a {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    background: none;
+    border: none;
+    border-right: 2px solid #000000;
+    color: #ffffff !important;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    padding: 0;
+}
+
+.tab-bar button:last-child,
+.tab-bar a:last-child {
+    border-right: none;
+}
+
+/* Желтый hover работает для доступных вкладок, КРОМЕ активной */
+.tab-bar button:hover:not(.active-tab):not(.disabled-tab),
+.tab-bar a:hover:not(.active-tab):not(.disabled-tab) {
+    background-color: var(--hover-yellow);
+    color: #000000 !important;
+}
+
+/* Активная вкладка всегда остается темно-красной */
+.active-tab {
+    background-color: #600000 !important;
+    color: #ffffff !important;
+    cursor: default;
+}
+
+/* Неактивные вкладки гостя (Добавление, Вход) — текст белый, как у остальных */
+.disabled-tab,
+.tab-bar button:disabled {
+    color: #ffffff !important;
+    opacity: 1 !important;
+    cursor: default !important;
+}
+
+/* --- Фильтрация слайдером (Каталог) --- */
+.filter-slider-container {
+    background-color: #D3D3D3;
+    padding: 15px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #333333;
+    font-weight: bold;
+}
+
+.slider-current-val {
+    color: var(--brand-red);
+    font-size: 15px;
+}
+
+.range-slider {
+    width: 100%;
+    margin: 5px 0;
+    accent-color: var(--brand-red);
+    cursor: pointer;
+}
+
+.filter-actions {
+    display: flex;
+    margin-top: 5px;
+}
+
+.filter-btn {
+    width: 100%;
+    background-color: var(--brand-red) !important;
+    color: white !important;
+    border: none !important;
+    padding: 12px !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+    border-radius: 4px !important;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s !important;
+}
+
+.filter-btn:hover:not(:disabled) {
+    background-color: var(--hover-yellow) !important;
+    color: black !important;
+}
+
+/* --- Плитка карточек в Каталоге --- */
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 12px;
+}
+
+.card-custom {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #d0d0d0 !important;
+    border-radius: 4px !important;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.card-custom img {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+}
+
+.card-info {
+    padding: 8px 10px 4px 10px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.card-title-link {
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--text-dark);
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-frequency {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--brand-red);
+}
+
+/* Нижняя плашка: крестик слева, лайки справа */
+.card-footer-custom {
+    background-color: var(--card-gray);
+    padding: 6px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+}
+
+/* Кнопка удаления (крестик) внизу карточки — темно-красная с желтым ховером */
+.card-delete-btn {
+    background-color: var(--brand-red);
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    padding: 0;
+}
+
+.card-delete-btn:hover {
+    background-color: var(--hover-yellow);
+    color: #000000;
+}
+
+.card-heart {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: bold;
+}
+
+/* --- Экран 1: Лента --- */
+/* --- Экран 1: Лента (Полноэкранное видео на заднем фоне) --- */
+.feed-container {
+    position: relative;
+    background-color: #000000;
+    height: calc(100vh - 60px); /* Вся высота экрана до нижней панели TabBar */
+    width: 100%;
+    padding: 12px;
+    box-sizing: border-box;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Прижимаем описание и кнопки к низу поверх видео */
+}
+
+/* Растягиваем контейнер медиа на весь экран задним фоном */
+.feed-media-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    z-index: 1;
+}
+
+/* Заполняем весь экран без белых полей */
+.feed-media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Нижний блок с описанием и кнопками лежит поверх видео (z-index: 2) */
+.feed-bottom-row {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+/* Счетчик лайков делаем белым с четкой черной тенью, чтобы он читался на фоне любого видео */
+.likes-count {
+    font-size: 12px;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9), 0 0 6px rgba(0, 0, 0, 0.8);
+}
+.feed-info-card {
+    flex: 1 1 auto;
+    min-width: 0;
+    background-color: #D9D9D9;
+    padding: 12px;
+    box-sizing: border-box;
+}
+
+.feed-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #1a1a1a;
+    line-height: 1.2;
+}
+
+/* Раскрывающийся блок <details> с 1 строкой описания до кнопки "еще" */
+.feed-details {
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 1 строчка описания между заголовком и кнопкой "еще" */
+.feed-description-preview {
+    font-size: 13px;
+    line-height: 1.4;
+    color: #333333;
+    margin: 6px 0 4px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* При раскрытии "еще" скрываем 1 строчку и показываем полное описание */
+.feed-details[open] .feed-description-preview {
+    display: none;
+}
+
+.feed-details summary {
+    order: 2;
+    font-size: 12px;
+    color: #555555;
+    cursor: pointer;
+    font-weight: bold;
+    user-select: none;
+    outline: none;
+}
+
+.feed-details summary:hover {
+    color: #000000;
+}
+
+.feed-details-content {
+    margin: 6px 0 4px 0;
+    padding-top: 6px;
+    border-top: 1px solid #c0c0c0;
+}
+
+.feed-description {
+    font-size: 13px;
+    line-height: 1.4;
+    color: #333333;
+    margin: 0;
+    word-wrap: break-word;
+}
+
+/* Правая колонка: параметры НАД кнопкой лайка и кнопкой далее */
+.feed-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.feed-params-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background-color: #D9D9D9;
+    padding: 8px 10px;
+    text-align: center;
+    box-sizing: border-box;
+    min-width: 95px;
+}
+
+.feed-param-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.feed-label {
+    font-size: 10px;
+    color: #555555;
+    line-height: 1.1;
+}
+
+.feed-value {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--brand-red);
+}
+
+.heart-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.heart-circle {
+    width: 48px;
+    height: 48px;
+    background-color: var(--brand-red);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+}
+
+.likes-count {
+    font-size: 12px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.next-circle-btn {
+    width: 48px;
+    height: 48px;
+    background-color: var(--brand-red) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-decoration: none;
+    font-size: 22px !important;
+    padding: 0 !important;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s !important;
+}
+
+.next-circle-btn:hover {
+    background-color: var(--hover-yellow) !important;
+    color: black !important;
+}
+
+.feed-more-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-top: 2px;
+    font-size: 12px;
+    color: #555555;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: left;
+    outline: none;
+}
+
+.feed-more-btn:hover {
+    color: #000000;
+}
