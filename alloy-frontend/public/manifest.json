@@ -1,0 +1,21 @@
+{
+  "short_name": "XRF Alloys",
+  "name": "Определение состава сплавов по XRF",
+  "icons": [
+    {
+      "src": "/default.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/default.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#F4F4F4",
+  "theme_color": "#8B0000",
+  "display": "standalone",
+  "orientation": "portrait"
+}

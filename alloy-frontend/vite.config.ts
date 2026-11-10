@@ -3,16 +3,23 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    dedupe: ['react', 'react-dom'],
+  },
   server: {
-    port: 3000,
+    port: 5173,
     host: true,
-    strictPort: true,
-    watch: {
-      usePolling: true,
-    },
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/img': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/media': {
+        target: 'http://localhost:3000',
         changeOrigin: true,
       },
     },

@@ -1,95 +1,128 @@
-import { type FC, useState } from "react";
-import { Spinner } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { getAlloysByEnergy } from "../modules/alloysApi";
-import { ALLOYS_MOCK } from "../modules/mock";
-import { EnergyFilter } from "../components/EnergyFilter";
-import { AlloyCard } from "../components/AlloysCard";
-import { ROUTES } from "../Routes";
-import type { AppOutletContext } from "../AppLayout";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../store/store";
+import { setMaxEnergy } from "../store/filterSlice";
+import { Alloys, getAlloysCatalog, deleteAlloyById } from "../modules/alloysApi";
 
-export const CatalogPage: FC = () => {
-  const { cards, setCards, energyFilter, setEnergyFilter } =
-    useOutletContext<AppOutletContext>();
-  const [loading, setLoading] = useState(false);
+interface OutletContextType {
+  alloys: Alloys[];
+  setAlloys: React.Dispatch<React.SetStateAction<Alloys[]>>;
+}
+
+export const CatalogPage: React.FC = () => {
+  const { alloys, setAlloys } = useOutletContext<OutletContextType>();
+  const maxEnergy = useSelector((state: RootState) => state.filter.maxEnergy);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-  const applyMock = () => {
-    const maxEnergy = parseFloat(energyFilter);
-    const limit = Number.isNaN(maxEnergy) ? 25 : maxEnergy;
-
-    const filtered = ALLOYS_MOCK.results.filter(
-      (item) => item.status === "published" && item.energy_kev <= limit
-    );
-    setCards(filtered);
+  const loadCatalog = async (energy: number) => {
+    setLoading(true);
+    const res = await getAlloysCatalog(energy);
+    setAlloys(res.results);
     setLoading(false);
   };
 
-  const handleSearch = () => {
-    setLoading(true);
-    getAlloysByEnergy(energyFilter)
-      .then((response) => {
-        if (response.results) {
-          const maxEnergy = parseFloat(energyFilter);
-          const limit = Number.isNaN(maxEnergy) ? 25 : maxEnergy;
-          const filtered = response.results.filter(
-            (item) => item.energy_kev <= limit
-          );
-          setCards(filtered);
-          setLoading(false);
-          return;
-        }
-        applyMock();
-      })
-      .catch(applyMock);
+  // Загружаем каталог при первом заходе с текущим значением фильтра из Redux
+  useEffect(() => {
+    loadCatalog(maxEnergy);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Отправка запроса ТОЛЬКО по кнопке "Применить"
+  const handleApplyFilter = (e: React.FormEvent) => {
+    e.preventDefault();
+    loadCatalog(maxEnergy);
   };
 
-  const handleCardClick = (id: number) => {
-    navigate(`${ROUTES.FEED}/${id}`);
-  };
-
-  const handleDeleteAlloy = (id: number) => {
-    fetch(`/api/alloyDelete/${id}`, { method: "DELETE" }).catch(() => {});
-
-    const target = ALLOYS_MOCK.results.find((item) => item.id === id);
-    if (target) {
-      target.status = "deleted";
-    }
-    setCards(cards.filter((item) => item.id !== id));
+  // Удаление карточки по нажатию на красный крестик
+  const handleDelete = async (e: React.MouseEvent, id: number) => {
+    e.stopPropagation();
+    e.preventDefault();
+    await deleteAlloyById(id);
+    setAlloys((prev) => prev.filter((item) => item.id !== id));
   };
 
   return (
-    <div>
-      <EnergyFilter
-        value={energyFilter}
-        setValue={setEnergyFilter}
-        loading={loading}
-        onSubmit={handleSearch}
-      />
+    <div className="catalog-container">
+      {/* Фильтрация слайдером с кнопкой Применить */}
+      <form onSubmit={handleApplyFilter} className="filter-slider-container">
+        <div className="slider-header">
+          <span className="slider-title">Макс. частота (до):</span>
+          <span className="slider-current-val">
+            {maxEnergy >= 25 ? "25 кэВ (Все)" : `≤ ${maxEnergy} кэВ`}
+          </span>
+        </div>
 
-      {loading && (
-        <div style={{ textAlign: "center", padding: "30px" }}>
-          <Spinner animation="border" />
+        <input
+          type="range"
+          name="energy"
+          min={0}
+          max={25}
+          step={0.01}
+          value={maxEnergy}
+          onChange={(e) => dispatch(setMaxEnergy(parseFloat(e.target.value)))}
+          className="range-slider"
+        />
+
+        <div className="filter-actions">
+          <button type="submit" className="filter-btn" disabled={loading}>
+            Применить
+          </button>
+        </div>
+      </form>
+
+      {/* Плитка карточек */}
+      {loading ? (
+        <div style={{ textAlign: "center", padding: "20px" }}>Загрузка...</div>
+      ) : (
+        <div className="grid">
+          {alloys.map((item) => {
+            const shortTitle =
+              item.title.length > 7 ? `${item.title.slice(0, 7)}...` : item.title;
+
+            return (
+              <div
+                key={item.id}
+                className="card-custom"
+                onClick={() => navigate(`/feed?id=${item.id}`)}
+              >
+                {/* Красная кнопка удаления (крестик) */}
+                <button
+                  type="button"
+                  className="card-delete-btn"
+                  onClick={(e) => handleDelete(e, item.id)}
+                  title="Удалить сплав"
+                >
+                  ✖
+                </button>
+
+                <img
+                  src={item.image_url || "/default.png"}
+                  alt={item.title}
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = "/default.png";
+                  }}
+                />
+
+                <div className="card-info">
+                  <span className="card-title-link" title={item.title}>
+                    {shortTitle}
+                  </span>
+                  <div className="card-frequency">
+                    Частота: {item.energy_kev} кэВ
+                  </div>
+                </div>
+
+                <div className="card-footer-custom">
+                  <div className="card-heart">{item.likes_count ?? 0} 🤍</div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
-
-      {!loading &&
-        (!cards.length ? (
-          <div style={{ textAlign: "center", padding: "20px" }}>
-            <p>Сплавы с частотой ≤ {energyFilter} кэВ не найдены</p>
-          </div>
-        ) : (
-          <div className="grid">
-            {cards.map((item) => (
-              <AlloyCard
-                key={item.id}
-                {...item}
-                onClick={() => handleCardClick(item.id)}
-                onDelete={handleDeleteAlloy}
-              />
-            ))}
-          </div>
-        ))}
     </div>
   );
 };
